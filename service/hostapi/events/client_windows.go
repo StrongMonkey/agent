@@ -1,9 +1,9 @@
-//+build !windows
-
 package events
 
 import (
+	"fmt"
 	"github.com/docker/docker/client"
+	"os"
 )
 
 const (
@@ -11,10 +11,6 @@ const (
 )
 
 func NewDockerClient() (*client.Client, error) {
-	cli, err := client.NewEnvClient()
-	if err != nil {
-		return nil, err
-	}
-	cli.UpdateClientVersion(defaultApiVersion)
-	return cli, nil
+	host := fmt.Sprintf("tcp://%v:2375", os.Getenv("DEFAULT_GATEWAY"))
+	return client.NewClient(host, defaultApiVersion, nil, nil)
 }

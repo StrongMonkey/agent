@@ -3,8 +3,8 @@ package compute
 import (
 	"context"
 
-	"vendor.old2/github.com/docker/docker/api/types"
-	"vendor.old2/github.com/docker/docker/api/types/network"
+	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/network"
 
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
@@ -32,8 +32,6 @@ func setupFieldsHostConfig(fields model.InstanceFields, hostConfig *container.Ho
 	hostConfig.Isolation = fields.Isolation
 
 	hostConfig.RestartPolicy = fields.RestartPolicy
-
-	hostConfig.ConsoleSize = fields.ConsoleSize
 
 	hostConfig.CPUCount = fields.CPUCount
 

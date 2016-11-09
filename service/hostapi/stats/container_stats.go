@@ -14,6 +14,7 @@ import (
 	"github.com/rancher/websocket-proxy/backend"
 	"github.com/rancher/websocket-proxy/common"
 	"golang.org/x/net/context"
+	"runtime"
 )
 
 type ContainerStatsHandler struct {
@@ -21,6 +22,10 @@ type ContainerStatsHandler struct {
 
 func (s *ContainerStatsHandler) Handle(key string, initialMessage string, incomingMessages <-chan string, response chan<- common.Message) {
 	defer backend.SignalHandlerClosed(key, response)
+
+	if runtime.GOOS == "windows" {
+		return
+	}
 
 	requestUrl, err := url.Parse(initialMessage)
 	if err != nil {

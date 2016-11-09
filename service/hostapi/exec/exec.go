@@ -14,6 +14,7 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/rancher/agent/service/hostapi/auth"
 	"github.com/rancher/agent/service/hostapi/events"
+	"runtime"
 )
 
 type ExecHandler struct {
@@ -137,6 +138,10 @@ func convert(execMap map[string]interface{}) (types.ExecConfig, string) {
 			}
 		}
 		config.Cmd = cmd
+	}
+
+	if runtime.GOOS == "windows" {
+		config.Cmd = []string{"powershell"}
 	}
 
 	return config, containerID
