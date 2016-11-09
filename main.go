@@ -17,6 +17,7 @@ func main() {
 		fmt.Printf("go-agent version %s \n", VERSION)
 		os.Exit(0)
 	}
+	logrus.SetOutput(os.Stdout)
 
 	if os.Getenv("CATTLE_DEBUG") != "" {
 		logrus.SetLevel(logrus.DebugLevel)
