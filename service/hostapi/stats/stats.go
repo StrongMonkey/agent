@@ -15,20 +15,20 @@ import (
 	"golang.org/x/net/context"
 )
 
-type StatsHandler struct {
+type Handler struct {
 }
 
-func (s *StatsHandler) Handle(key string, initialMessage string, incomingMessages <-chan string, response chan<- common.Message) {
+func (s *Handler) Handle(key string, initialMessage string, incomingMessages <-chan string, response chan<- common.Message) {
 	defer backend.SignalHandlerClosed(key, response)
 
-	requestUrl, err := url.Parse(initialMessage)
+	requestURL, err := url.Parse(initialMessage)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err, "message": initialMessage}).Error("Couldn't parse url from message.")
 		return
 	}
 
 	id := ""
-	parts := pathParts(requestUrl.Path)
+	parts := pathParts(requestURL.Path)
 	if len(parts) == 3 {
 		id = parts[2]
 	}

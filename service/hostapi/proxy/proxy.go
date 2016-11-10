@@ -36,7 +36,7 @@ func (s *Handler) Handle(key string, initialMessage string, incomingMessages <-c
 	if message.Hijack {
 		s.doHijack(message, key, incomingMessages, response)
 	} else {
-		s.doHttp(message, key, incomingMessages, response)
+		s.doHTTP(message, key, incomingMessages, response)
 	}
 }
 
@@ -71,14 +71,14 @@ func (s *Handler) doHijack(message *common.HTTPMessage, key string, incomingMess
 	}
 	defer conn.Close()
 
-	reader := &HttpReader{
+	reader := &HTTPReader{
 		Buffered:   message.Body,
 		Chan:       incomingMessages,
 		EOF:        message.EOF,
 		MessageKey: key,
 	}
 
-	writer := &HttpWriter{
+	writer := &HTTPWriter{
 		MessageKey: key,
 		Chan:       response,
 	}
@@ -132,8 +132,8 @@ func setContentLength(req *http.Request) (int64, error) {
 	return req.ContentLength, nil
 }
 
-func (s *Handler) doHttp(message *common.HTTPMessage, key string, incomingMessages <-chan string, response chan<- common.Message) {
-	req, err := http.NewRequest(message.Method, message.URL, &HttpReader{
+func (s *Handler) doHTTP(message *common.HTTPMessage, key string, incomingMessages <-chan string, response chan<- common.Message) {
+	req, err := http.NewRequest(message.Method, message.URL, &HTTPReader{
 		Buffered:   message.Body,
 		Chan:       incomingMessages,
 		EOF:        message.EOF,
@@ -165,7 +165,7 @@ func (s *Handler) doHttp(message *common.HTTPMessage, key string, incomingMessag
 		Headers: map[string][]string(resp.Header),
 	}
 
-	httpWriter := &HttpWriter{
+	httpWriter := &HTTPWriter{
 		Message:    httpResponseMessage,
 		MessageKey: key,
 		Chan:       response,

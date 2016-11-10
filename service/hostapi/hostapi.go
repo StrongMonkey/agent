@@ -63,7 +63,7 @@ func StartUp() {
 			continue
 		}
 		tokenRequest := &rclient.HostApiProxyToken{
-			ReportedUuid: config.Config.HostUuid,
+			ReportedUuid: config.Config.HostUUID,
 		}
 		tokenResponse, err := getConnectionToken(0, tokenRequest, rancherClient)
 		if err != nil {
@@ -76,16 +76,16 @@ func StartUp() {
 			<-block
 		}
 		handlers := make(map[string]backend.Handler)
-		handlers["/v1/logs/"] = &logs.LogsHandler{}
-		handlers["/v2-beta/logs/"] = &logs.LogsHandler{}
-		handlers["/v1/stats/"] = &stats.StatsHandler{}
-		handlers["/v2-beta/stats/"] = &stats.StatsHandler{}
+		handlers["/v1/logs/"] = &logs.Handler{}
+		handlers["/v2-beta/logs/"] = &logs.Handler{}
+		handlers["/v1/stats/"] = &stats.Handler{}
+		handlers["/v2-beta/stats/"] = &stats.Handler{}
 		handlers["/v1/hoststats/"] = &stats.HostStatsHandler{}
 		handlers["/v2-beta/hoststats/"] = &stats.HostStatsHandler{}
 		handlers["/v1/containerstats/"] = &stats.ContainerStatsHandler{}
 		handlers["/v2-beta/containerstats/"] = &stats.ContainerStatsHandler{}
-		handlers["/v1/exec/"] = &exec.ExecHandler{}
-		handlers["/v2-beta/exec/"] = &exec.ExecHandler{}
+		handlers["/v1/exec/"] = &exec.Handler{}
+		handlers["/v2-beta/exec/"] = &exec.Handler{}
 		handlers["/v1/console/"] = &console.Handler{}
 		handlers["/v2-beta/console/"] = &console.Handler{}
 		handlers["/v1/dockersocket/"] = &dockersocketproxy.Handler{}
@@ -115,9 +115,9 @@ func getConnectionToken(try int, tokenReq *rclient.HostApiProxyToken, rancherCli
 				parsed := &ParsedError{}
 				if uErr := json.Unmarshal([]byte(apiError.Body), &parsed); uErr == nil {
 					if strings.EqualFold(parsed.Code, "InvalidReference") && strings.EqualFold(parsed.FieldName, "reportedUuid") {
-						logrus.WithField("reportedUuid", config.Config.HostUuid).WithField("Attempt", try).Infof("Host not registered yet. Sleeping 1 second and trying again.")
+						logrus.WithField("reportedUuid", config.Config.HostUUID).WithField("Attempt", try).Infof("Host not registered yet. Sleeping 1 second and trying again.")
 						time.Sleep(time.Second)
-						try += 1
+						try++
 						return getConnectionToken(try, tokenReq, rancherClient) // Recursion!
 					}
 				} else {

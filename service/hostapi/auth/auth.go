@@ -2,11 +2,9 @@ package auth
 
 import (
 	"net/http"
-	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/golang/glog"
-	"github.com/gorilla/context"
 	"github.com/rancher/agent/service/hostapi/app/common"
 	"github.com/rancher/agent/service/hostapi/config"
 )
@@ -35,7 +33,7 @@ func Auth(rw http.ResponseWriter, req *http.Request) bool {
 		return false
 	}
 
-	if config.Config.HostUuidCheck && token.Claims["hostUuid"] != config.Config.HostUuid {
+	if config.Config.HostUUIDCheck && token.Claims["hostUuid"] != config.Config.HostUUID {
 		glog.Infoln("Host UUID mismatch , authentication failed")
 		return false
 	}
@@ -56,38 +54,11 @@ func GetAndCheckToken(tokenString string) (*jwt.Token, bool) {
 		return token, false
 	}
 
-	if config.Config.HostUuidCheck && token.Claims["hostUuid"] != config.Config.HostUuid {
+	if config.Config.HostUUIDCheck && token.Claims["hostUuid"] != config.Config.HostUUID {
 		glog.Infoln("Host UUID mismatch , authentication failed")
 		return token, false
 	}
 
 	return token, true
 
-}
-
-func AuthHttpInterceptor(router http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		startTime := time.Now()
-
-		if !Auth(w, req) {
-			http.Error(w, "Failed authentication", 401)
-			return
-		}
-
-		router.ServeHTTP(w, req)
-
-		finishTime := time.Now()
-		elapsedTime := finishTime.Sub(startTime)
-
-		switch req.Method {
-		case "GET":
-			// We may not always want to StatusOK, but for the sake of
-			// this example we will
-			common.LogAccess(w, req, elapsedTime)
-		case "POST":
-			// here we might use http.StatusCreated
-		}
-
-		context.Clear(req)
-	})
 }

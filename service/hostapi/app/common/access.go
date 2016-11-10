@@ -1,4 +1,4 @@
-// Note: inspiration for this from https://gist.github.com/cespare/3985516
+// Package common Note: inspiration for this from https://gist.github.com/cespare/3985516
 package common
 
 import (

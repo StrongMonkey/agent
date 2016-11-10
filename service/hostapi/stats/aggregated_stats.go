@@ -8,7 +8,7 @@ import (
 type AggregatedStats []AggregatedStat
 
 type AggregatedStat struct {
-	Id           string `json:"id,omitempty"`
+	ID           string `json:"id,omitempty"`
 	ResourceType string `json:"resourceType,omitempty"`
 	MemLimit     uint64 `json:"memLimit,omitempty"`
 	*containerStats
@@ -24,7 +24,7 @@ func convertToAggregatedStats(id string, containerIds map[string]string, resourc
 	for j := 0; j < len(stats); j++ {
 		aggStats := AggregatedStat{id, resourceType, memLimit, stats[j].Stats[0]}
 		if id == "" {
-			aggStats.Id = containerIds[stats[j].Id]
+			aggStats.ID = containerIds[stats[j].ID]
 		}
 		totalAggregatedStat = append(totalAggregatedStat, aggStats)
 	}

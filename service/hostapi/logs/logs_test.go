@@ -101,7 +101,7 @@ func (s *LogsTestSuite) doLogTest(tty bool, prefix string, c *check.C) {
 
 func (s *LogsTestSuite) setupWebsocketProxy() {
 	config.Parse()
-	config.Config.HostUuid = "1"
+	config.Config.HostUUID = "1"
 	config.Config.ParsedPublicKey = wsp_utils.ParseTestPublicKey()
 	privateKey = wsp_utils.ParseTestPrivateKey()
 
@@ -120,7 +120,7 @@ func (s *LogsTestSuite) setupWebsocketProxy() {
 	signedToken := wsp_utils.CreateBackendToken("1", privateKey)
 
 	handlers := make(map[string]backend.Handler)
-	handlers["/v1/logs/"] = &LogsHandler{}
+	handlers["/v1/logs/"] = &Handler{}
 	go backend.ConnectToProxy("ws://localhost:3333/v1/connectbackend?token="+signedToken, handlers)
 }
 

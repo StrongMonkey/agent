@@ -197,7 +197,6 @@ func TestHostStatsLegacy(t *testing.T) {
 func setupWebsocketProxy() {
 	config.Parse()
 	config.Config.NumStats = 1
-	config.Config.CAdvisorUrl = "http://localhost:8080"
 	config.Config.ParsedPublicKey = wsp_utils.ParseTestPublicKey()
 	privateKey = wsp_utils.ParseTestPrivateKey()
 
@@ -219,7 +218,7 @@ func setupWebsocketProxy() {
 	signedToken := wsp_utils.CreateBackendToken("1", privateKey)
 
 	handlers := make(map[string]backend.Handler)
-	handlers["/v1/stats/"] = &StatsHandler{}
+	handlers["/v1/stats/"] = &Handler{}
 	handlers["/v1/hoststats/"] = &HostStatsHandler{}
 	handlers["/v1/containerstats/"] = &ContainerStatsHandler{}
 	go backend.ConnectToProxy("ws://localhost:1111/v1/connectbackend?token="+signedToken, handlers)

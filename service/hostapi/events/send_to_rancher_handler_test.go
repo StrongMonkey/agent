@@ -11,8 +11,8 @@ import (
 func TestSendToRancherHandler(t *testing.T) {
 	dockerClient := prep(t)
 
-	injectedIp := "10.1.2.3"
-	c, _ := createNetTestContainer(dockerClient, injectedIp)
+	injectedIP := "10.1.2.3"
+	c, _ := createNetTestContainer(dockerClient, injectedIP)
 	defer dockerClient.ContainerRemove(context.Background(), c.ID, types.ContainerRemoveOptions{
 		Force:         true,
 		RemoveVolumes: true,
@@ -21,18 +21,18 @@ func TestSendToRancherHandler(t *testing.T) {
 	from := "foo/bar"
 	status := "create"
 	var eventTime int64 = 1426091566
-	hostUuid := "host-123"
+	hostUUID := "host-123"
 	event := &events.Message{ID: c.ID, From: from, Status: status, Time: eventTime}
 	expectedEvent := &rclient.ContainerEvent{
 		ExternalId:        c.ID,
 		ExternalFrom:      from,
 		ExternalStatus:    status,
 		ExternalTimestamp: eventTime,
-		ReportedHostUuid:  hostUuid,
+		ReportedHostUuid:  hostUUID,
 	}
 	rancher := mockRancherClient(expectedEvent, t)
 
-	handler := &SendToRancherHandler{client: dockerClient, rancher: rancher, hostUuid: hostUuid}
+	handler := &SendToRancherHandler{client: dockerClient, rancher: rancher, hostUUID: hostUUID}
 
 	if err := handler.Handle(event); err != nil {
 		t.Fatal(err)

@@ -105,7 +105,7 @@ func spinupContainers(createCount int, dockerClient *client.Client, t *testing.T
 		}
 
 		if err := dockerClient.ContainerRemove(context.Background(), c.ID, types.ContainerRemoveOptions{}); err != nil {
-			t.Fatalf("Failure", err)
+			t.Fatalf("Failure: %v", err)
 		}
 	}
 }

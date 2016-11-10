@@ -9,8 +9,6 @@ import (
 	"github.com/Sirupsen/logrus"
 )
 
-const HAPROXY_SOCK = "/var/run/haproxy.sock"
-
 type Stat map[string]string
 
 type Monitor struct {

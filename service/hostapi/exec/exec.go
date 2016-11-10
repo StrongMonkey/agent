@@ -17,18 +17,18 @@ import (
 	"runtime"
 )
 
-type ExecHandler struct {
+type Handler struct {
 }
 
-func (h *ExecHandler) Handle(key string, initialMessage string, incomingMessages <-chan string, response chan<- common.Message) {
+func (h *Handler) Handle(key string, initialMessage string, incomingMessages <-chan string, response chan<- common.Message) {
 	defer backend.SignalHandlerClosed(key, response)
 
-	requestUrl, err := url.Parse(initialMessage)
+	requestURL, err := url.Parse(initialMessage)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err, "url": initialMessage}).Error("Couldn't parse url.")
 		return
 	}
-	tokenString := requestUrl.Query().Get("token")
+	tokenString := requestURL.Query().Get("token")
 	token, valid := auth.GetAndCheckToken(tokenString)
 	if !valid {
 		return

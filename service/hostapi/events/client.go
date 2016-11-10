@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	defaultApiVersion = "1.22"
+	defaultAPIVersion = "1.22"
 )
 
 func NewDockerClient() (*client.Client, error) {
@@ -15,6 +15,6 @@ func NewDockerClient() (*client.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	cli.UpdateClientVersion(defaultApiVersion)
+	cli.UpdateClientVersion(defaultAPIVersion)
 	return cli, nil
 }

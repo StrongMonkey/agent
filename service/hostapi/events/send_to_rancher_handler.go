@@ -12,7 +12,7 @@ import (
 type SendToRancherHandler struct {
 	client   *client.Client
 	rancher  *rclient.RancherClient
-	hostUuid string
+	hostUUID string
 }
 
 func (h *SendToRancherHandler) Handle(event *events.Message) error {
@@ -30,13 +30,10 @@ func (h *SendToRancherHandler) Handle(event *events.Message) error {
 	}
 	defer lock.Unlock()
 
-	found := false
 	container, err := h.client.ContainerInspect(context.Background(), event.ID)
 	if err != nil {
 		if ok := client.IsErrContainerNotFound(err); !ok {
 			return err
-		} else {
-			found = true
 		}
 	}
 
@@ -45,11 +42,9 @@ func (h *SendToRancherHandler) Handle(event *events.Message) error {
 		ExternalId:        event.ID,
 		ExternalFrom:      event.From,
 		ExternalTimestamp: int64(event.Time),
-		ReportedHostUuid:  h.hostUuid,
+		ReportedHostUuid:  h.hostUUID,
 	}
-	if found {
-		containerEvent.DockerInspect = container
-	}
+	containerEvent.DockerInspect = container
 
 	if _, err := h.rancher.ContainerEvent.Create(containerEvent); err != nil {
 		return err

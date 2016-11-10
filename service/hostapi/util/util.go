@@ -6,16 +6,16 @@ import (
 )
 
 func GetRancherClient() (*rclient.RancherClient, error) {
-	apiUrl := config.Config.CattleUrl
+	apiURL := config.Config.CattleURL
 	accessKey := config.Config.CattleAccessKey
 	secretKey := config.Config.CattleSecretKey
 
-	if apiUrl == "" || accessKey == "" || secretKey == "" {
+	if apiURL == "" || accessKey == "" || secretKey == "" {
 		return nil, nil
 	}
 
 	apiClient, err := rclient.NewRancherClient(&rclient.ClientOpts{
-		Url:       apiUrl,
+		Url:       apiURL,
 		AccessKey: accessKey,
 		SecretKey: secretKey,
 	})

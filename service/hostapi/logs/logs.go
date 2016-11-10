@@ -5,7 +5,6 @@ import (
 	"io"
 	"net/url"
 	"strconv"
-	_ "time"
 
 	log "github.com/Sirupsen/logrus"
 
@@ -24,18 +23,18 @@ var (
 	stderrHead = []byte{2, 0, 0, 0}
 )
 
-type LogsHandler struct {
+type Handler struct {
 }
 
-func (l *LogsHandler) Handle(key string, initialMessage string, incomingMessages <-chan string, response chan<- common.Message) {
+func (l *Handler) Handle(key string, initialMessage string, incomingMessages <-chan string, response chan<- common.Message) {
 	defer backend.SignalHandlerClosed(key, response)
 
-	requestUrl, err := url.Parse(initialMessage)
+	requestURL, err := url.Parse(initialMessage)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err, "url": initialMessage}).Error("Couldn't parse url.")
 		return
 	}
-	tokenString := requestUrl.Query().Get("token")
+	tokenString := requestURL.Query().Get("token")
 	token, valid := auth.GetAndCheckToken(tokenString)
 	if !valid {
 		return

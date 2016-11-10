@@ -19,23 +19,23 @@ type HostStatsHandler struct {
 func (s *HostStatsHandler) Handle(key string, initialMessage string, incomingMessages <-chan string, response chan<- common.Message) {
 	defer backend.SignalHandlerClosed(key, response)
 
-	requestUrl, err := url.Parse(initialMessage)
+	requestURL, err := url.Parse(initialMessage)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err, "message": initialMessage}).Error("Couldn't parse url from message.")
 		return
 	}
 
-	tokenString := requestUrl.Query().Get("token")
+	tokenString := requestURL.Query().Get("token")
 
-	resourceId := ""
+	resourceID := ""
 
 	token, err := parseRequestToken(tokenString, config.Config.ParsedPublicKey)
 	if err == nil {
-		resourceIdInterface, found := token.Claims["resourceId"]
+		resourceIDInterface, found := token.Claims["resourceId"]
 		if found {
-			resourceIdVal, ok := resourceIdInterface.(string)
+			resourceIDVal, ok := resourceIDInterface.(string)
 			if ok {
-				resourceId = resourceIdVal
+				resourceID = resourceIDVal
 			}
 		}
 	}
@@ -90,7 +90,7 @@ func (s *HostStatsHandler) Handle(key string, initialMessage string, incomingMes
 			}
 		}
 
-		err = writeAggregatedStats(resourceId, nil, "host", infos, uint64(memLimit), writer)
+		err = writeAggregatedStats(resourceID, nil, "host", infos, uint64(memLimit), writer)
 		if err != nil {
 			return
 		}
@@ -98,6 +98,4 @@ func (s *HostStatsHandler) Handle(key string, initialMessage string, incomingMes
 		time.Sleep(1 * time.Second)
 		count = 1
 	}
-
-	return
 }

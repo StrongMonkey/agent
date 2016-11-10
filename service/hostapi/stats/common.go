@@ -164,30 +164,30 @@ type DockerStats struct {
 }
 
 type containerInfo struct {
-	Id    string
+	ID    string
 	Stats []*containerStats
 }
 
 type containerStats struct {
 	Timestamp time.Time    `json:"timestamp"`
-	Cpu       CpuStats     `json:"cpu,omitempty"`
+	CPU       CPUStats     `json:"cpu,omitempty"`
 	DiskIo    DiskIoStats  `json:"diskio,omitempty"`
 	Network   NetworkStats `json:"network,omitempty"`
 	Memory    MemoryStats  `json:"memory,omitempty"`
 }
 
-type CpuStats struct {
-	Usage CpuUsage `json:"usage"`
+type CPUStats struct {
+	Usage CPUUsage `json:"usage"`
 }
 
-type CpuUsage struct {
+type CPUUsage struct {
 	// Total CPU usage.
 	// Units: nanoseconds
 	Total uint64 `json:"total"`
 
 	// Per CPU/core usage of the container.
 	// Unit: nanoseconds.
-	PerCpu []uint64 `json:"per_cpu_usage,omitempty"`
+	PerCPU []uint64 `json:"per_cpu_usage,omitempty"`
 
 	// Time spent in user space.
 	// Unit: nanoseconds
@@ -243,7 +243,7 @@ type InterfaceStats struct {
 
 func getContainerInfo(reader *bufio.Reader, count int, id string) (containerInfo, error) {
 	contInfo := containerInfo{}
-	contInfo.Id = id
+	contInfo.ID = id
 	stats := []*containerStats{}
 	for i := 0; i < count; i++ {
 		str, err := reader.ReadString([]byte("\n")[0])
@@ -264,13 +264,13 @@ func getContainerInfo(reader *bufio.Reader, count int, id string) (containerInfo
 func convertDockerStats(stats DockerStats) *containerStats {
 	containerStats := containerStats{}
 	containerStats.Timestamp = stats.Read
-	containerStats.Cpu.Usage.Total = uint64(stats.CPUStats.CPUUsage.TotalUsage)
-	containerStats.Cpu.Usage.PerCpu = []uint64{}
+	containerStats.CPU.Usage.Total = uint64(stats.CPUStats.CPUUsage.TotalUsage)
+	containerStats.CPU.Usage.PerCPU = []uint64{}
 	for _, value := range stats.CPUStats.CPUUsage.PercpuUsage {
-		containerStats.Cpu.Usage.PerCpu = append(containerStats.Cpu.Usage.PerCpu, uint64(value))
+		containerStats.CPU.Usage.PerCPU = append(containerStats.CPU.Usage.PerCPU, uint64(value))
 	}
-	containerStats.Cpu.Usage.System = uint64(stats.CPUStats.CPUUsage.UsageInKernelmode)
-	containerStats.Cpu.Usage.User = uint64(stats.CPUStats.CPUUsage.UsageInKernelmode)
+	containerStats.CPU.Usage.System = uint64(stats.CPUStats.CPUUsage.UsageInKernelmode)
+	containerStats.CPU.Usage.User = uint64(stats.CPUStats.CPUUsage.UsageInKernelmode)
 	containerStats.Memory.Usage = uint64(stats.MemoryStats.Usage)
 	containerStats.Network.Interfaces = []InterfaceStats{}
 	for name, netStats := range stats.Networks {

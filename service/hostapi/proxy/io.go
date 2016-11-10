@@ -8,14 +8,14 @@ import (
 	"github.com/rancher/websocket-proxy/common"
 )
 
-type HttpWriter struct {
+type HTTPWriter struct {
 	headerWritten bool
 	Message       common.HTTPMessage
 	MessageKey    string
 	Chan          chan<- common.Message
 }
 
-func (h *HttpWriter) Write(bytes []byte) (n int, err error) {
+func (h *HTTPWriter) Write(bytes []byte) (n int, err error) {
 	h.Message.Body = bytes
 	if err := h.writeMessage(); err != nil {
 		return 0, err
@@ -23,7 +23,7 @@ func (h *HttpWriter) Write(bytes []byte) (n int, err error) {
 	return len(bytes), nil
 }
 
-func (h *HttpWriter) writeMessage() error {
+func (h *HTTPWriter) writeMessage() error {
 	bytes, err := json.Marshal(&h.Message)
 	if err != nil {
 		return err
@@ -39,24 +39,24 @@ func (h *HttpWriter) writeMessage() error {
 	return nil
 }
 
-func (h *HttpWriter) Close() error {
+func (h *HTTPWriter) Close() error {
 	h.Message.EOF = true
 	return h.writeMessage()
 }
 
-type HttpReader struct {
+type HTTPReader struct {
 	Buffered   []byte
 	Chan       <-chan string
 	EOF        bool
 	MessageKey string
 }
 
-func (h *HttpReader) Close() error {
+func (h *HTTPReader) Close() error {
 	logrus.Debugf("HTTP READER CLOSE %s", h.MessageKey)
 	return nil
 }
 
-func (h *HttpReader) Read(bytes []byte) (int, error) {
+func (h *HTTPReader) Read(bytes []byte) (int, error) {
 	if len(h.Buffered) == 0 && !h.EOF {
 		if err := h.read(); err != nil {
 			return 0, err
@@ -69,13 +69,12 @@ func (h *HttpReader) Read(bytes []byte) (int, error) {
 	if h.EOF {
 		logrus.Debugf("HTTP READER RETURN EOF %s", h.MessageKey)
 		return count, io.EOF
-	} else {
-		logrus.Debugf("HTTP READER RETURN COUNT %s %d %d: %s", h.MessageKey, count, len(h.Buffered), bytes[:count])
-		return count, nil
 	}
+	logrus.Debugf("HTTP READER RETURN COUNT %s %d %d: %s", h.MessageKey, count, len(h.Buffered), bytes[:count])
+	return count, nil
 }
 
-func (h *HttpReader) read() error {
+func (h *HTTPReader) read() error {
 	str, ok := <-h.Chan
 	if !ok {
 		logrus.Debugf("HTTP READER CHANNEL EOF %s", h.MessageKey)

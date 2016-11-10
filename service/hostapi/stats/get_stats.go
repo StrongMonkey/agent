@@ -22,14 +22,14 @@ func getRootContainerInfo(count int) (containerInfo, error) {
 		if err != nil {
 			return containerInfo{}, err
 		}
-		stats.Cpu.Usage.PerCpu = []uint64{}
+		stats.CPU.Usage.PerCPU = []uint64{}
 		for _, perStats := range cpuPerStats {
-			stats.Cpu.Usage.PerCpu = append(stats.Cpu.Usage.PerCpu, uint64(perStats.User+perStats.System)*1000000000)
+			stats.CPU.Usage.PerCPU = append(stats.CPU.Usage.PerCPU, uint64(perStats.User+perStats.System)*1000000000)
 		}
 		if len(cpuStats) > 0 {
-			stats.Cpu.Usage.Total = uint64(cpuStats[0].User+cpuStats[0].System+cpuStats[0].Idle) * 1000000000
-			stats.Cpu.Usage.User = uint64(cpuStats[0].User) * 1000000000
-			stats.Cpu.Usage.System = uint64(cpuStats[0].System) * 1000000000
+			stats.CPU.Usage.Total = uint64(cpuStats[0].User+cpuStats[0].System+cpuStats[0].Idle) * 1000000000
+			stats.CPU.Usage.User = uint64(cpuStats[0].User) * 1000000000
+			stats.CPU.Usage.System = uint64(cpuStats[0].System) * 1000000000
 		}
 		// memory
 		memStats, err := mem.VirtualMemory()

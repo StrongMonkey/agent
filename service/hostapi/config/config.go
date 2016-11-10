@@ -11,20 +11,19 @@ import (
 )
 
 type config struct {
-	CAdvisorUrl     string
-	DockerUrl       string
+	DockerURL       string
 	Systemd         bool
 	NumStats        int
 	Auth            bool
 	HaProxyMonitor  bool
 	Key             string
-	HostUuid        string
+	HostUUID        string
 	Port            int
-	Ip              string
+	IP              string
 	ParsedPublicKey interface{}
-	HostUuidCheck   bool
+	HostUUIDCheck   bool
 	EventsPoolSize  int
-	CattleUrl       string
+	CattleURL       string
 	CattleAccessKey string
 	CattleSecretKey string
 	PidFile         string
@@ -62,14 +61,14 @@ func Parse() error {
 	}
 	Config.HaProxyMonitor = false
 	Config.Port = port
-	Config.Ip = configuration.HostAPIIP()
-	Config.DockerUrl = "unix:///var/run/docker.sock"
+	Config.IP = configuration.HostAPIIP()
+	Config.DockerURL = "unix:///var/run/docker.sock"
 	Config.Auth = true
-	Config.HostUuid = uuid
-	Config.HostUuidCheck = true
+	Config.HostUUID = uuid
+	Config.HostUUIDCheck = true
 	Config.Key = configuration.JwtPublicKeyFile()
 	Config.EventsPoolSize = 10
-	Config.CattleUrl = configuration.APIURL("")
+	Config.CattleURL = configuration.APIURL("")
 	Config.CattleAccessKey = configuration.AccessKey()
 	Config.CattleSecretKey = configuration.SecretKey()
 

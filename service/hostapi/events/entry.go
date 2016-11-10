@@ -89,7 +89,7 @@ func getHandlersFn(dockerClient *client.Client, rancherClient *rclient.RancherCl
 		sendToRancherHandler := &SendToRancherHandler{
 			client:   dockerClient,
 			rancher:  rancherClient,
-			hostUuid: getHostUuid(),
+			hostUUID: getHostUUID(),
 		}
 		handlers["start"] = append(handlers["start"], sendToRancherHandler)
 		handlers["stop"] = []Handler{sendToRancherHandler}
@@ -101,6 +101,6 @@ func getHandlersFn(dockerClient *client.Client, rancherClient *rclient.RancherCl
 	return handlers, nil
 }
 
-func getHostUuid() string {
-	return config.Config.HostUuid
+func getHostUUID() string {
+	return config.Config.HostUUID
 }

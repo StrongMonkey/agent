@@ -7,10 +7,7 @@ import (
 	"github.com/golang/glog"
 )
 
-// 0 = info
-// 1 = warning
-// 2 = error - should be most common
-// 3 = fatal
+// CheckError 0 = info 1 = warning 2 = error - should be most common 3 = fatal
 func CheckError(err error, level int) {
 	if err != nil {
 		var stack [4096]byte

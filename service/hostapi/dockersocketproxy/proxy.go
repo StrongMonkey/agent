@@ -19,12 +19,12 @@ type Handler struct {
 func (s *Handler) Handle(key string, initialMessage string, incomingMessages <-chan string, response chan<- common.Message) {
 	defer backend.SignalHandlerClosed(key, response)
 
-	requestUrl, err := url.Parse(initialMessage)
+	requestURL, err := url.Parse(initialMessage)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err, "url": initialMessage}).Error("Couldn't parse url.")
 		return
 	}
-	tokenString := requestUrl.Query().Get("token")
+	tokenString := requestURL.Query().Get("token")
 	_, valid := auth.GetAndCheckToken(tokenString)
 	if !valid {
 		return

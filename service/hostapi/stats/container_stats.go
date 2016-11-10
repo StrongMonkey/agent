@@ -27,13 +27,13 @@ func (s *ContainerStatsHandler) Handle(key string, initialMessage string, incomi
 		return
 	}
 
-	requestUrl, err := url.Parse(initialMessage)
+	requestURL, err := url.Parse(initialMessage)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err, "message": initialMessage}).Error("Couldn't parse url from message.")
 		return
 	}
 
-	tokenString := requestUrl.Query().Get("token")
+	tokenString := requestURL.Query().Get("token")
 
 	containerIds := map[string]string{}
 
@@ -53,7 +53,7 @@ func (s *ContainerStatsHandler) Handle(key string, initialMessage string, incomi
 	}
 
 	id := ""
-	parts := pathParts(requestUrl.Path)
+	parts := pathParts(requestURL.Path)
 	if len(parts) == 3 {
 		id = parts[2]
 	}
@@ -171,10 +171,7 @@ func (s *ContainerStatsHandler) Handle(key string, initialMessage string, incomi
 			if err != nil {
 				return
 			}
-
 			time.Sleep(1 * time.Second)
 		}
 	}
-
-	return
 }

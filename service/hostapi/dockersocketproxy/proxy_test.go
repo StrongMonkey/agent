@@ -230,7 +230,7 @@ func encodeRequest(method string, uri string, body []byte, c *check.C) []byte {
 func (s *ProxyTestSuite) setupWebsocketProxy() {
 	// TODO Deduplicate. This method and the two below are close copies of the ones in logs_test.go.
 	config.Parse()
-	config.Config.HostUuid = "1"
+	config.Config.HostUUID = "1"
 	config.Config.ParsedPublicKey = wsp_utils.ParseTestPublicKey()
 	s.privateKey = wsp_utils.ParseTestPrivateKey()
 
