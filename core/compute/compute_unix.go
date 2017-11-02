@@ -19,6 +19,7 @@ import (
 	"github.com/docker/go-connections/nat"
 	"github.com/pkg/errors"
 	"github.com/rancher/agent/core/hostInfo"
+	"github.com/rancher/agent/core/storage"
 	"github.com/rancher/agent/model"
 	"github.com/rancher/agent/utilities/constants"
 	dutils "github.com/rancher/agent/utilities/docker"
@@ -478,6 +479,59 @@ func setupDeviceOptions(hostConfig *container.HostConfig, instance model.Instanc
 		hostConfig.BlkioDeviceWriteBps = blkioDeviceWriteBps
 	}
 
+}
+
+func setupRancherFlexVolume(instance model.Instance, hostConfig *container.HostConfig) error {
+	for _, volume := range instance.VolumesFromDataVolumeMounts {
+		if storage.IsRancherVolume(volume) {
+			payload := struct {
+				Name    string
+				Options map[string]string `json:"Opts,omitempty"`
+			}{
+				Name:    volume.Name,
+				Options: volume.Data.Fields.DriverOpts,
+			}
+			_, err := storage.CallRancherStorageVolumePlugin(volume, storage.Create, payload)
+			if err != nil {
+				return err
+			}
+			_, err = storage.CallRancherStorageVolumePlugin(volume, storage.Attach, payload)
+			if err != nil {
+				return err
+			}
+			resp, err := storage.CallRancherStorageVolumePlugin(volume, storage.Mount, payload)
+			if err != nil {
+				return err
+			}
+			for _, vol := range instance.Data.Fields.DataVolumes {
+				parts := strings.Split(vol, ":")
+				if len(parts) > 1 {
+					mode := "rw"
+					if len(parts) == 3 {
+						mode = parts[2]
+					}
+					if volume.Name == parts[0] {
+						hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%s:%s:%s", resp.Mountpoint, parts[1], mode))
+					}
+				}
+			}
+
+		}
+	}
+	return nil
+}
+
+func unmountRancherFlexVolume(instance model.Instance) error {
+	for _, volume := range instance.VolumesFromDataVolumeMounts {
+		if storage.IsRancherVolume(volume) {
+			payload := struct{ Name string }{Name: volume.Name}
+			_, err := storage.CallRancherStorageVolumePlugin(volume, storage.Unmount, payload)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 func dockerContainerCreate(ctx context.Context, dockerClient *client.Client, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, containerName string) (types.ContainerCreateResponse, error) {
